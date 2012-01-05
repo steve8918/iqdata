@@ -9,6 +9,7 @@
 
 #include "util.h"
 #include "data.h"
+#include "dbdefaults.h"
 
 std::string GetSymbolTableName(std::string symbol, Options &o)
 {
@@ -132,9 +133,9 @@ void GetOptionFlags(int argc, char *argv[], Options &o)
    //set a single hardcoded table name so that I can dump it into something like correlate
    o.useHardcodedTable = scan_option(argc, argv, "-table %s", o.hardcodedTable) != 0;
 
-   strcpy(o.username, "stocks");
-   strcpy(o.password, "stocks");
-   strcpy(o.serverName, "VM1");
+   strcpy(o.username, defaultUsername);
+   strcpy(o.password, defaultPassword);
+   strcpy(o.serverName, defaultServer);
    o.specifyUsername = (scan_option(argc, argv, "-username %s", o.username) != 0);
    o.specifyPassword = (scan_option(argc, argv, "-password %s", o.password) != 0);
    scan_option(argc, argv, "-serverName %s", o.serverName);

@@ -18,12 +18,13 @@
 #include "util.h"
 #include "iqfeedutils.h"
 
-#define CHECK_MEMLEAK
+//#define CHECK_MEMLEAK
 
 #ifdef CHECK_MEMLEAK
 #include "crtdbg.h"
 #endif
 
+extern char *checkTableExists;
 
 //char *dow30="AA,AXP,BA,BAC,C,CAT,CVX,DD,DIS,GE,GM,HD,HPQ,IBM,INTC,JNJ,JPM,KFT,KO,MCD,MMM,MRK,MSFT,PFE,PG,T,UTX,VZ,WMT,XOM";
 char *dow30="AA,AXP,BA,BAC,CAT,CSCO,CVX,DD,DIS,GE,HD,HPQ,IBM,INTC,JNJ,JPM,KFT,KO,MCD,MMM,MRK,MSFT,PFE,PG,T,TRV,UTX,VZ,WMT,XOM";
@@ -348,7 +349,8 @@ link *GetData(std::string symbol)
    return head;
 }
 
-boost::unordered_set<dataPoint> *GetDBHash(DBHandles *d, std::string symbolTableName, char *date1, char *date2, std::string contractName)
+boost::unordered_set<dataPoint> *GetDBHash(DBHandles *d, std::string symbolTableName, 
+                                           char *date1, char *date2, std::string contractName)
 {
    //IQFeed will give the data backwards, so we need to order the dates properly
    char *firstDate = date2, *secondDate = date1;
@@ -368,12 +370,14 @@ boost::unordered_set<dataPoint> *GetDBHash(DBHandles *d, std::string symbolTable
    char query[256];
    if (o.isOption || o.isFutures)
    {
-      sprintf(query, "SELECT transactiontime, tickId FROM %s WHERE transactiontime >= '%s' AND transactiontime <= '%s' and contract = '%s'",
+      sprintf(query, "SELECT transactiontime, tickId FROM %s WHERE transactiontime >= '%s' " 
+                     "AND transactiontime <= '%s' and contract = '%s'",
          symbolTableName.c_str(), firstDate, secondDate, contractName.c_str());
    }
    else
    {
-      sprintf(query, "SELECT transactiontime, tickId FROM %s WHERE transactiontime >= '%s' AND transactiontime <= '%s'",
+      sprintf(query, "SELECT transactiontime, tickId FROM %s WHERE transactiontime >= '%s' "
+                     "AND transactiontime <= '%s'",
               symbolTableName.c_str(), firstDate, secondDate);
    }
 
@@ -418,9 +422,9 @@ boost::unordered_set<dataPoint> *GetDBHash(DBHandles *d, std::string symbolTable
 
    return hash;
 }
-extern char *checkTableExists;
 
-void WriteData(DBHandles *d, link *head, std::string symbol, std::string symbolTableName, boost::unordered_set<dataPoint> *hash)
+void WriteData(DBHandles *d, link *head, std::string symbol, std::string symbolTableName, 
+               boost::unordered_set<dataPoint> *hash)
 {
    char sql[512];
    SQLRETURN r;
@@ -497,7 +501,8 @@ void WriteData(DBHandles *d, link *head, std::string symbol, std::string symbolT
             double rowDelta = totalRows - beginBlockCount;
             double currentBlockTime = blockDelta == 0 ? 0 : 1000* rowDelta/blockDelta;
 
-            WriteLog("%s: writing total rows=%d, total time = %d, rows/s = %.2f, numWritten = %d, numSkipped = %d, timestamp = %s\n", 
+            WriteLog("%s: writing total rows=%d, total time = %d, rows/s = %.2f, numWritten = %d, "
+                     "numSkipped = %d, timestamp = %s\n", 
                symbol.c_str(), totalRows, totalTime/1000, currentBlockTime, numWritten, numSkipped, oneLine);
          }
       }

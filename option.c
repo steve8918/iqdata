@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define NO_VMT
 #ifndef NO_VMT
 #include "vmtio.h"
 #include "vmtlib.h"
